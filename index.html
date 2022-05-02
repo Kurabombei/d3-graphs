@@ -7,6 +7,7 @@
         * {
             box-sizing: border-box;
             margin: 0;
+	        font-family: 'Rubik', Roboto, "Helvetica Neue", sans-serif;
         }
 
         html, body {
@@ -20,21 +21,44 @@
             color: #ff6b00;
         }
 
+        .m-t-0_5 {
+	        margin-top: 0.5rem;
+        }
+
+        .m-t-1 {
+	        margin-top: 1rem;
+        }
+
+        .m-t-1_5 {
+	        margin-top: 1.5rem;
+        }
+
         #graph-ref {
+	        padding: 1.25rem;
 	        margin: 50px auto;
 	        height: 70%;
 	        width: 62.5rem;
-	        border: #ff6b00 5px solid;
-	        border-radius: 5px;
+	        border-radius: 0.75rem;
 	        background-color: #ffa86e;
+	        color: #fff;
+	        box-shadow: 0px 0px 10px 5px rgba(0,177,255,0.65);
         }
 	</style>
 </head>
 <body>
-<div id="graph-ref"></div>
+<div id="graph-ref">
+	<h1>Посилання на візуалізацію рішень на web редактор p5.js, який зручний для відображення графіки в JS.</h1>
+	<ul class="m-t-1">
+		<li class="m-t-1_5"><h2>Лаба №1:</h2><div class="m-t-0_5">Нема на p5.js, шукай lab-1.js файл але є бонус) <br/> <a href="https://editor.p5js.org/Kurabombei/sketches/CH6L_ezoz" target="_blank">Бонус (пошук остового дерева на прокліканих нодах, за допомогою алгоритму Прим)</a></div></li>
+		<li class="m-t-1_5"><h2>Лаба №2:</h2><div class="m-t-0_5"><a href="https://editor.p5js.org/Kurabombei/sketches/USHwfBOZW" target="_blank">Клікай тут (незакінчена версія)</a></div></li>
+		<li class="m-t-1_5"><h2>Лаба №3:</h2><div class="m-t-0_5"><a href="https://editor.p5js.org/Kurabombei/sketches/CH6L_ezoz" target="_blank">Клікай тут</a></div></li>
+		<li class="m-t-1_5"><h2>Лаба №4:</h2><div class="m-t-0_5"><a href="https://editor.p5js.org/Kurabombei/sketches/CH6L_ezoz" target="_blank">Клікай тут</a></div></li>
+		<li class="m-t-1_5"><h2>Лаба №5:</h2><div class="m-t-0_5"><a href="https://editor.p5js.org/Kurabombei/sketches/CH6L_ezoz" target="_blank">Клікай тут</a></div></li>
+	</ul>
+</div>
 
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="lab-1.js"></script>
+<!--<script src="https://d3js.org/d3.v7.min.js"></script>-->
+<!--<script src="lab-1.js"></script>-->
 
 </body>
 </html>

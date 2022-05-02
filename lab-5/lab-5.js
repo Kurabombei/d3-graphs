@@ -24,15 +24,16 @@ const  generateAlphabet = (capital = false) => {
 			let name = String.fromCharCode(i + 97);
 			if(weight !== 0) {
 				formattedList.get(city).push({name, weight});
+				allLinks.push([city, name]);
 			}
 		});
 	}
 
-	function findMaxAdjacent(alliedNodes, visited) {
+	function findMaxAdjacent(alliedNodes, visitedStreets) {
 		if(alliedNodes.length === 0) return;
 		let selectedNode = alliedNodes.reduce((prev, curr) => (prev.weight < curr.weight) ? prev : curr);
-		if(visited.has(selectedNode.name)) {
-			return findMaxAdjacent(alliedNodes.filter(node => node !== selectedNode), visited);
+		if(visitedStreets.has(selectedNode.name)) {
+			return findMaxAdjacent(alliedNodes.filter(node => node !== selectedNode), visitedStreets);
 		}
 		console.log('Найдена вершина:', selectedNode);
 		let selectedOrigin = formattedList.get(selectedNode.name).find(city => city.weight === selectedNode.weight);
@@ -42,30 +43,30 @@ const  generateAlphabet = (capital = false) => {
 		return selectedNode;
 	}
 
-	function primaAlgorithm(start) {
-		const visited = new Set();
-		visited.add(start);
+	function listonosha(start) {
+		const visitedStreets = new Set();
+		visitedStreets.add(start);
 
 		let foundNodes = [start], weightSum = 0, n = 1;
 
-		// Перший крок
-		let alliedNodes = formattedList.get(start);
-		let unreachedRoutes = [...alliedNodes];
-
-		while(foundNodes.length < nodeQuantity) {
-			console.log('Відвідані вершини:', visited);
-			let foundNode = findMaxAdjacent(unreachedRoutes, visited);
-			visited.add(foundNode.name);
-			foundNodes.push(foundNode.name);
-			unreachedRoutes = [...unreachedRoutes, ...formattedList.get(foundNode.name)];
-
-			weightSum += foundNode.weight;
-			console.log('Сумарна вага ребер остового дерева: ', weightSum);
-		}
+		// // Перший крок
+		// let alliedNodes = formattedList.get(start);
+		// let unreachedRoutes = [...alliedNodes];
+		//
+		// while(foundNodes.length < nodeQuantity) {
+		// 	console.log('Відвідані вершини:', visitedStreets);
+		// 	let foundNode = findMaxAdjacent(unreachedRoutes, visitedStreets);
+		// 	visitedStreets.add(foundNode.name);
+		// 	foundNodes.push(foundNode.name);
+		// 	unreachedRoutes = [...unreachedRoutes, ...formattedList.get(foundNode.name)];
+		//
+		// 	weightSum += foundNode.weight;
+		// 	console.log('Сумарна вага ребер остового дерева: ', weightSum);
+		// }
 		return result;
 	}
 
-	let adjacencyList = makeArrayFromTextFile('l1-1.txt');
+	let adjacencyList = makeArrayFromTextFile('l2-1.txt');
 
 	// Дістаємо число вершин з вхідних даних
 	const nodeQuantity = adjacencyList.shift();
@@ -74,12 +75,14 @@ const  generateAlphabet = (capital = false) => {
 	const cities = generateAlphabet().slice(0, nodeQuantity);
 
 	const formattedList = new Map();
+	const allLinks = [];
 
 	// Створення і форматування даних під задачу.
 	cities.forEach(city => addNode(city));
 	adjacencyList.forEach((row, index) => formatAlliedNodes(index, row));
 	console.log('Відформатовані дані про граф: ', formattedList);
+	console.log('Всі ребра з повторами: ', allLinks);
 
-	let res = primaAlgorithm('a');
+	let res = listonosha('a');
 	console.log('Результат виконання програми: ', res);
 })()
