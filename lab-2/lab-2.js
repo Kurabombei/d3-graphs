@@ -39,18 +39,13 @@ const  generateAlphabet = (capital = false) => {
 
 		let pairPool = oddNodes.filter(el => el[0] !== start);
 		pairPool.forEach((node, i, self) => {
-			console.log(node);
+			// console.log(node);
 			result.push({
 				pairStart: [start, node[0]],
 				pairEnd: self.filter(el => el[0] !== node[0]).map(el => el[0])
 			});
 		});
 		return result;
-	}
-
-	function getNodeByName(name) {
-		console.log('formattedList.get(name)', formattedList.get(name));
-		return formattedList.get(name);
 	}
 
 	function shortestPathBfs(startNode, stopNode) {
@@ -84,7 +79,7 @@ const  generateAlphabet = (capital = false) => {
 	}
 
 	function eulerianPath(updatedLinks, start) {
-		console.log(updatedLinks, start);
+		// console.log(updatedLinks, start);
 		let currPath = [];
 		let circuit = [];
 		let sumWeight = 0;
@@ -154,7 +149,6 @@ const  generateAlphabet = (capital = false) => {
 	let totalWeight = filteredLinks.reduce((sum, el) => sum + el[1], 0);
 
 	console.log('Відформатовані дані про граф: ', formattedList);
-	console.log('Всі ребра з повторами: ', allLinks);
 	console.log('Всі ребра без повторів: ', filteredLinks);
 
 	let oddNodes = findOddNodes();
@@ -195,7 +189,7 @@ const  generateAlphabet = (capital = false) => {
 	console.log('Оновлено дуги (добавлено повторювані)', updateLinks)
 
 	let res = eulerianPath(updateLinks, start);
-	// console.log('Результат виконання програми: ', res);
+	console.log('Результат виконання програми: ', res);
 })()
 
 
