@@ -1,9 +1,27 @@
 /** Красивий варіант з візуалізацією але без штучно вказаних ваг дуг (оскільки не найдено варіанту
  * швидко намалювати ребра на правильних відстанях, можна переглянути тут:
- *
- *
- *
+ * https://editor.p5js.org/Kurabombei/sketches/M1ZpPmHiq
+ * Тут же, у файлі, реалізовано цей лексографічний алгоритм замість задуманого брутфорсу, бо він цікавий)
  * **/
+class Node {
+	constructor(id, parentId, weight) {
+		this.id = id;
+		this.parent = parentId;
+		this.weight = weight;
+
+		// this.lowerBound = lowerB();
+		this.path = [];
+		this.children = [];
+	}
+
+}
+
+class SpaceTree {
+	constructor(root, quantity) {
+		this.root = root;
+		this.quantity = quantity;
+	}
+}
 
 const fs = require('fs')
 
@@ -19,6 +37,7 @@ const swap = (a, i, j) => {
 	a[i] = a[j];
 	a[j] = temp;
 }
+
 const factorial = (n) => {
 	if (n === 1) {
 		return 1;
@@ -28,11 +47,12 @@ const factorial = (n) => {
 }
 
 (function run() {
+	let spaceTree;
 	let nodes = [];
 	let totalNodes = 6;
 
 	let order = [];
-	let adjacencyList;
+	let adjacencyList = [[]];
 
 	let totalPermutations;
 	let count = 0;
@@ -43,25 +63,91 @@ const factorial = (n) => {
 
 	function preload() {
 		adjacencyList = makeArrayFromTextFile('l3-1.txt');
+		totalNodes = adjacencyList.shift();
+		let root = new Node(1, 1, 0);
+		spaceTree = new SpaceTree(root, totalNodes);
+
 
 	}
 
 	function setup() {
-		totalNodes = adjacencyList.shift();
+		console.log('Початкова матриця: ', adjacencyList);
+
+		// Додаю нескінченність на діагоналі
+		let arrCopy = adjacencyList.map((row, i) => {
+			return row.map((el, j) => (i === j) ? Infinity : el);
+		});
+		console.log(arrCopy);
+
 		for (let i = 0; i < totalNodes; i++) {
-			let v = createVector(width/5 + random(width/1.5), random(height / 2));
-			nodes[i] = v;
-			order[i] = i;
+			// let node = new Node(String.fromCharCode(i + 97));
+			nodes[i] = String.fromCharCode(i + 97);
+			// order[i] = i;
+		}
+		
+		let limit = 0;
+		while(limit < 25) {
+			limit++;
+			adjacencyList.forEach((row, i) => {
+				row.forEach((el, j) => {
+					if(el !== 0) {
+						let node = new Node(j, i)
+					}
+				})
+			})
 		}
 
-		let d = calcDistance(nodes, order);
-		recordDistance = d;
-		bestEver = order.slice();
-
-		totalPermutations = factorial(totalNodes);
-		console.log(totalPermutations);
+		// let d = calcDistance(nodes, order);
+		// recordDistance = d;
+		// bestEver = order.slice();
+		//
+		// totalPermutations = factorial(totalNodes);
+		// console.log(totalPermutations);
 
 	}
+	//
+	// function minColRowDel (arr){
+	//
+	// 	let tempArr = arr.slice();
+	//
+	// 	let minRow = [];
+	// 	let minCol = [];
+	//
+	// 	for (let i = 0; i < tempArr.length; i++) {
+	// 		minRow.push(100000);
+	// 		for (let j = 0; j < tempArr[i].length; j++) {
+	// 			if(tempArr[i][j] < minRow[i]) minRow[i] = tempArr[i][j];
+	// 		}
+	// 	}
+	//
+	// 	console.log(`minRow: ${minRow}`);
+	//
+	//
+	// 	for (let i = 0; i < tempArr.length; i++) {
+	// 		for (let j = 0; j < tempArr[i].length; j++) {
+	// 			tempArr[i][j] -= minRow[i];
+	// 		}
+	// 	}
+	//
+	// 	console.log(tempArr);
+	//
+	// 	for (let i = 0; i < tempArr.length; i++) {
+	// 		minCol.push(100000);
+	// 		for (let j = 0; j < tempArr[i].length; j++) {
+	// 			if(tempArr[j][i] < minCol[i]) minCol[i] = tempArr[j][i];
+	// 		}
+	// 	}
+	//
+	// 	console.log(`minCol: ${minCol}`);
+	//
+	// 	for (let i = 0; i < tempArr.length; i++) {
+	// 		for (let j = 0; j < tempArr[i].length; j++) {
+	// 			tempArr[j][i] -= minCol[i];
+	// 		}
+	// 	}
+	//
+	// 	return [tempArr, minRow, minCol];
+	// }
 
 	function print() {
 		// background(55);
@@ -105,6 +191,13 @@ const factorial = (n) => {
 		// }
 		// endShape();
 
+		console.log(nodes);
+		let res = minColRowDel(adjacencyList)[0];
+		let minRow = minColRowDel(adjacencyList)[1];
+		let minCol = minColRowDel(adjacencyList)[2];
+		console.log(res);
+		console.log(minRow);
+		console.log(minCol);
 		let d = calcDistance(nodes, order);
 		if (d < recordDistance) {
 			recordDistance = d;
@@ -139,36 +232,7 @@ const factorial = (n) => {
 	}
 
 	function nextOrder() {
-		count++;
-
-		// Крок перший лексографічного алгоритму
-		// https://www.quora.com/How-would-you-explain-an-algorithm-that-generates-permutations-using-lexicographic-ordering
-		let largestI = -1;
-		for (let i = 0; i < order.length - 1; i++) {
-			if (order[i] < order[i + 1]) {
-				largestI = i;
-			}
-		}
-		if (largestI == -1) {
-			noLoop();
-			console.log('finished');
-		}
-
-		// Крок 2
-		let largestJ = -1;
-		for (let j = 0; j < order.length; j++) {
-			if (order[largestI] < order[j]) {
-				largestJ = j;
-			}
-		}
-
-		// Крок 3
-		swap(order, largestI, largestJ);
-
-		// Крок 4: Робимо reverse для largestI + 1
-		let endArray = order.splice(largestI + 1);
-		endArray.reverse();
-		order = order.concat(endArray);
+		
 	}
 
 	preload();

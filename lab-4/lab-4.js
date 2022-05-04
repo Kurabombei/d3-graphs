@@ -1,85 +1,141 @@
 const fs = require('fs')
-
 const makeArrayFromTextFile = (path) => {
 	const text = fs.readFileSync(path, 'utf-8');
 	const arr = text.trim().split('\n');
 	return arr.map( (element) => element.split(' ').map((el) => parseInt(el)));
+
 }
 
-const  generateAlphabet = (capital = false) => {
-	return [...Array(26)].map((_, i) => String.fromCharCode(i + (capital ? 65 : 97)));
-}
+function  fordFulkerson (iArr) {
+	let arr = iArr.map((array) => {
+		return array.slice();
+	});
 
-(function run() {
-	let result = '';
-	// Добавлення вершини
-	function addNode(city) {
-		formattedList.set(city, []);
-	}
+	let maxFlow = [];
+	let paths = [];
+	let limit = 0;
+	while(pathFinder(arr) && limit < 25){
+		limit++;
 
-	// Форматування інцидентних вершин
-	function formatAlliedNodes(cityIndex, routes) {
-		let city = String.fromCharCode(cityIndex + 97);
-		routes.forEach((weight, i) => {
-			let name = String.fromCharCode(i + 97);
-			if(weight !== 0) {
-				formattedList.get(city).push({name, weight});
+		console.log(`Ітерація №${limit}################################################`);
+		console.log(`Пошук шляху від 0 до ${arr.length - 1}`);
+
+		let path = pathFinder(arr);
+		console.log(path);
+
+		let minEdge = {
+			coordinates: [],
+			value: Infinity,
+			i: 0
+		}
+
+		for (let i = 0; i < path.length; i++) {
+			if(arr[path[i][0]][path[i][1]] < minEdge.value){
+				minEdge.coordinates = [path[i][0], path[i][1]];
+				minEdge.value = arr[path[i][0]][path[i][1]];
+				minEdge.i = i;
 			}
-		});
-	}
-
-	function findMaxAdjacent(alliedNodes, visited) {
-		if(alliedNodes.length === 0) return;
-		let selectedNode = alliedNodes.reduce((prev, curr) => (prev.weight < curr.weight) ? prev : curr);
-		if(visited.has(selectedNode.name)) {
-			return findMaxAdjacent(alliedNodes.filter(node => node !== selectedNode), visited);
 		}
-		console.log('Найдена вершина:', selectedNode);
-		let selectedOrigin = formattedList.get(selectedNode.name).find(city => city.weight === selectedNode.weight);
-		console.log(`До покриваючого дерева добавлено ребро: ${selectedOrigin.name}->${selectedNode.name} з вагою ${selectedOrigin.weight}`);
 
-		result += `${selectedOrigin.name}->${selectedNode.name}(${selectedOrigin.weight}); `
-		return selectedNode;
-	}
+		console.log(minEdge);
 
-	function primaAlgorithm(start) {
-		const visited = new Set();
-		visited.add(start);
-
-		let foundNodes = [start], weightSum = 0, n = 1;
-
-		// Перший крок
-		let alliedNodes = formattedList.get(start);
-		let unreachedRoutes = [...alliedNodes];
-
-		while(foundNodes.length < nodeQuantity) {
-			console.log('Відвідані вершини:', visited);
-			let foundNode = findMaxAdjacent(unreachedRoutes, visited);
-			visited.add(foundNode.name);
-			foundNodes.push(foundNode.name);
-			unreachedRoutes = [...unreachedRoutes, ...formattedList.get(foundNode.name)];
-
-			weightSum += foundNode.weight;
-			console.log('Сумарна вага ребер остового дерева: ', weightSum);
+		for (let i = 0; i < path.length; i++) {
+			if(i == minEdge.i) arr[path[i][0]][path[i][1]] = 0;
+			else arr[path[i][0]][path[i][1]] -= minEdge.value;
 		}
-		return result;
+
+
+		maxFlow.push(minEdge.value);
+		paths.push(path);
+
+		console.log('Знайдений шлях: ');
+		let pathStr = '';
+		for (let i = 0; i < path.length; i++) {
+			if(i == path.length - 1) pathStr += `(${path[i][0]})=>(${path[i][1]})`;
+			else pathStr += `(${path[i][0]})=>`;
+		}
+		console.log(pathStr);
+		console.log(`Мінімальне ребро: (${minEdge.coordinates[0]},${minEdge.coordinates[1]}) = ${minEdge.value}`);
+		console.log(`\nНова матриця: \n${printMatrix(arr)}`);
 	}
 
-	let adjacencyList = makeArrayFromTextFile('l1-1.txt');
 
-	// Дістаємо число вершин з вхідних даних
-	const nodeQuantity = adjacencyList.shift();
+	console.log(`\nЗнайдені шляхи:\n`);
+	let pathStr1 = '';
+	for (let i = 0; i < paths.length; i++) {
+		for (let j = 0; j < paths[i].length; j++) {
+			if(j == paths[i].length - 1) pathStr1 += `(${paths[i][j][0]})=>(${paths[i][j][1]})\n`;
+			else pathStr1 += `(${paths[i][j][0]})=>`;
+		}
+		console.log(pathStr1)
+		console.log(`\nмінімальне ребро = ${maxFlow[i]}\n`);
+	}
 
-	// Створили масив міст (назви це букви)
-	const cities = generateAlphabet().slice(0, nodeQuantity);
+	console.log(`\nМаксимум:\n`);
 
-	const formattedList = new Map();
+	for (let i = 0; i < maxFlow.length; i++) {
+		if(i == maxFlow.length - 1) console.log(`${maxFlow[i]}`);
+		else console.log(`${maxFlow[i]} + `);
+	}
 
-	// Створення і форматування даних під задачу.
-	cities.forEach(city => addNode(city));
-	adjacencyList.forEach((row, index) => formatAlliedNodes(index, row));
-	console.log('Відформатовані дані про граф: ', formattedList);
+	console.log(` = ${maxFlow.reduce((a, b) => a + b, 0)}`);
 
-	let res = primaAlgorithm('a');
-	console.log('Результат виконання програми: ', res);
+	console.log(...maxFlow);
+	console.log(paths);
+
+
+	function pathFinder (a){
+		let path = [];
+		let edgeList = [];
+		for (let i = 0; i < a.length; i++) {
+			for (let j = 0; j < a[i].length; j++) {
+				if(a[i][j] != 0) edgeList.push({coordinates:[i,j], value:a[i][j]});
+			}
+		}
+
+		if(edgeList.findIndex(val => val.coordinates[0] == 0) == -1) return 0;
+		path.push(edgeList[edgeList.findIndex(val => val.coordinates[0] == 0)].coordinates);
+
+		while(edgeList.findIndex(val => val.coordinates[0] == path[path.length - 1][1]) != -1){
+			console.log(`Найдено наступну: ${edgeList[edgeList.findIndex(val => val.coordinates[0] == path[path.length - 1][1])].coordinates}`);
+			path.push(edgeList[edgeList.findIndex(val => val.coordinates[0] == path[path.length - 1][1])].coordinates);
+			edgeList.splice(edgeList.findIndex(val => val.coordinates == path[path.length - 1]), 1);
+			console.log(`Оновлені дуги: \n`);
+			console.log(edgeList);
+			if(edgeList.findIndex(val => val.coordinates[0] == path[path.length - 1][1]) == -1 && path[path.length - 1][1] != a.length - 1){
+				path.splice(path.length - 1);
+			}
+		}
+
+		if(path[path.length - 1][1] == a.length - 1) return path;
+		else{
+			console.log("Не шлях.");
+			a[path[path.length - 1][0]][path[path.length - 1][1]] = 0
+			return pathFinder(a);
+		}
+	}
+
+}
+
+(function run () {
+	let arr = makeArrayFromTextFile('l4-1.txt');
+	let n = arr.shift();
+	console.log('Введена матриця:', arr);
+	fordFulkerson(arr);
 })()
+
+
+function printMatrix(arr){
+	let output = "";
+	for (let i = 0; i < arr.length; i++) {
+		output += "["
+		for (let j = 0; j < arr[i].length; j++) {
+			if(arr[i][j] < 10) output += `${arr[i][j]}   `;
+			else if(arr[i][j] < 100) output += `${arr[i][j]}  `;
+			else output += `${arr[i][j]} `;
+		}
+		output += "]\n"
+	}
+	return output;
+}
+
