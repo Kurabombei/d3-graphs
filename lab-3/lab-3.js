@@ -1,8 +1,9 @@
 /** Красивий варіант з візуалізацією але без штучно вказаних ваг дуг (оскільки не найдено варіанту
  * швидко намалювати ребра на правильних відстанях, можна переглянути тут:
  * https://editor.p5js.org/Kurabombei/sketches/M1ZpPmHiq
- * Тут же, у файлі, реалізовано цей лексографічний алгоритм замість задуманого брутфорсу, бо він цікавий)
+	 * На p5.js робочий лексографічний метод перебору, а тут незакінчений метод гілок та меж)
  * **/
+
 class Node {
 	constructor(id, parentId, weight) {
 		this.id = id;
@@ -192,12 +193,12 @@ const factorial = (n) => {
 		// endShape();
 
 		console.log(nodes);
-		let res = minColRowDel(adjacencyList)[0];
-		let minRow = minColRowDel(adjacencyList)[1];
-		let minCol = minColRowDel(adjacencyList)[2];
-		console.log(res);
-		console.log(minRow);
-		console.log(minCol);
+		// let res = minColRowDel(adjacencyList)[0];
+		// let minRow = minColRowDel(adjacencyList)[1];
+		// let minCol = minColRowDel(adjacencyList)[2];
+		// console.log(res);
+		// console.log(minRow);
+		// console.log(minCol);
 		let d = calcDistance(nodes, order);
 		if (d < recordDistance) {
 			recordDistance = d;

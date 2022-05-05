@@ -1,3 +1,4 @@
+// Чіткої задачі в методичці не найдено, тому тут бойлер код з 1 або 2 лаби.
 const fs = require('fs')
 
 const makeArrayFromTextFile = (path) => {
